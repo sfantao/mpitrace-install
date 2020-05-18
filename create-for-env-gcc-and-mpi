@@ -1,0 +1,95 @@
+#!/bin/bash
+
+base=$(pwd)
+
+# Get papi in case we need to use hardware counters
+if [ 1 -eq 0 ] ; then
+cd $base
+rm -rf papi*
+git clone https://bitbucket.org/icl/papi
+cd papi
+git checkout -b papi-6-0-0-1-t papi-6-0-0-1-t
+cd src
+./configure \
+  --prefix=${base}/papi-install \
+  --build=powerpc64le-ibm-linux-gnu \
+  --host=powerpc64le-ibm-linux-gnu \
+  --target=powerpc64le-ibm-linux-gnu \
+  --with-CPU=pwr9 \
+  CC=gcc \
+  CXX=g++ \
+  FC=gfortran \
+  F77=gfortran \
+  CFLAGS='-g -O2 -fPIC' \
+  FFLAGS='-g -O2 -fPIC'
+
+make -j123
+make -j123 install
+
+fi
+
+# ##Get binutils
+# if [ 1 -eq 1 ] ; then
+# cd $base
+# rm -rf binutils*
+# git clone https://sourceware.org/git/binutils-gdb.git binutils
+# cd binutils
+# git checkout -b binutils-2_33_1 binutils-2_33_1
+# base=/gpfs/users/sxa58-sxa03/ongoing/profile-tools/gcc-9.3.0/smpi-10.03.01.0rtm5
+# ./configure \
+#   --prefix=${base}/binutils-install \
+#   CC=gcc \
+#   CXX=g++ \
+#   CFLAGS='-fPIC' \
+#   CXXFLAGS='-fPIC'
+# make -j123
+# make -j123 install
+# fi
+
+
+# Get mpitrace - the latests is usually the better.
+if [ 1 -eq 0 ] ; then
+  cd $base
+  rm -rf mpitrace*
+  git clone https://github.com/IBM/mpitrace
+  
+  cd ${base}/mpitrace/src
+  ./configure  --with-hpm=core --with-papi=${base}/papi-install 
+  make libmpitrace.so libmpitrace.a libmpihpm.so libmpihpm.a 
+fi
+
+# Get gperftools
+if [ 1 -eq 1 ] ; then
+  cd $base
+  rm -rf gperftools*
+  git clone https://github.com/gperftools/gperftools
+  cd gperftools
+  git checkout -b gperftools-2.7.90 gperftools-2.7.90
+  ./autogen.sh 
+  ./configure --prefix=${base}/gperftools-install
+  make -j123 
+  make -j123 install
+fi
+
+# Delimit with 
+# MPI_Pcontrol(1); ... MPI_Pcontrol(0); // summary
+# MPI_Pcontrol(101); ... MPI_Pcontrol(100); // events
+
+# MPItrace flags
+# LD_PRELOAD=<>/libmpitrace.so
+# or
+# export OMPI_LD_PRELOAD_POSTPEND=<>/libmpitrace.so
+
+# Tracing flags
+# export TRACE_ALL_EVENTS=yes
+# export TRACE_ALL_TASKS=yes
+# export TRACE_BUFFER_SIZE=48000000 
+
+# Gperftools delimit
+# ProfilerStart("file name"); .. ; ProfilerStop(); ProfilerFlush();
+
+# Gperftools flags
+# export CPUPROFILE=sam_$OMPI_COMM_WORLD_RANK.perf 
+# export CPUPROFILESIGNAL=12
+# export CPUPROFILE_FREQUENCY=400
+# export LD_PRELOAD="$LD_PRELOAD:<path>/libprofiler.so"
