@@ -69,6 +69,20 @@ if [ 1 -eq 1 ] ; then
   ./configure --prefix=${base}/gperftools-install
   make -j123 
   make -j123 install
+  
+  cd $base
+  rm -rf gperftools-thd*
+  
+  git clone https://github.com/alk/gperf-all-threads gperftools-thd
+  cd gperftools-thd
+  ./bootstrap.sh
+  PKG_CONFIG_PATH=${base}/gperftools-install/lib/pkgconfig:$PKG_CONFIG_PATH \
+  ./configure \
+    --prefix=${base}/gperftools-install \
+    CC=gcc \
+    CXX=g++
+  make -j123
+  cp *.so ${base}/gperftools-install/lib
 fi
 
 # Delimit with 
@@ -93,3 +107,8 @@ fi
 # export CPUPROFILESIGNAL=12
 # export CPUPROFILE_FREQUENCY=400
 # export LD_PRELOAD="$LD_PRELOAD:<path>/libprofiler.so"
+
+# If mutithreaded
+# export CPUPROFILE_PER_THREAD_TIMERS=t
+# and register threads with ProfilerRegisterThread(); or preload
+# profile_all_threads.so
