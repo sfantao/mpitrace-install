@@ -6,24 +6,24 @@ base=$(pwd)
 if [ 1 -eq 1 ] ; then
 cd $base
 rm -rf papi*
+#git clone orig-papi papi
 git clone https://bitbucket.org/icl/papi
 cd papi
 git checkout -b papi-6-0-0-1-t papi-6-0-0-1-t
 cd src
 ./configure \
   --prefix=${base}/papi-install \
-  --build=powerpc64le-ibm-linux-gnu \
-  --host=powerpc64le-ibm-linux-gnu \
-  --target=powerpc64le-ibm-linux-gnu \
-  --with-CPU=pwr9 \
-  CC=gcc \
-  CXX=g++ \
-  FC=gfortran \
-  F77=gfortran \
+  --build=x86_64-amd-linux-gnu \
+  --host=x86_64-amd-linux-gnu \
+  --target=x86_64-amd-linux-gnu \
+  CC='gcc -fPIC' \
+  CXX='g++ -fPIC' \
+  FC='gfortran' \
+  F77='gfortran' \
   CFLAGS='-g -O2 -fPIC' \
   FFLAGS='-g -O2 -fPIC'
 
-make -j123
+make -j123 2>&1 | tee make-log.txt
 make -j123 install
 
 fi
@@ -59,9 +59,9 @@ if [ 1 -eq 1 ] ; then
 fi
 
 # Get gperftools
-if [ 1 -eq 1 ] ; then
+if [ 1 -eq 0 ] ; then
   cd $base
-  rm -rf gperftools*
+  rm -rf gperftools
   git clone https://github.com/gperftools/gperftools
   cd gperftools
   git checkout -b gperftools-2.7.90 gperftools-2.7.90
@@ -85,6 +85,7 @@ if [ 1 -eq 1 ] ; then
   cp *.so ${base}/gperftools-install/lib
 fi
 
+# MPI trace
 # Delimit with 
 # MPI_Pcontrol(1); ... MPI_Pcontrol(0); // summary
 # MPI_Pcontrol(101); ... MPI_Pcontrol(100); // events
