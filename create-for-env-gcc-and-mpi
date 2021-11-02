@@ -56,10 +56,14 @@ if [ 1 -eq 1 ] ; then
   cd ${base}/mpitrace/src
   ./configure  --with-hpm=core --with-papi=${base}/papi-install 
   make libmpitrace.so libmpitrace.a libmpihpm.so libmpihpm.a 
+
+  cd ${base}/mpitrace/roctx
+  ./configure  --with-rocm=$ROCM_PATH
+  make static shared 
 fi
 
 # Get gperftools
-if [ 1 -eq 0 ] ; then
+if [ 1 -eq 1 ] ; then
   cd $base
   rm -rf gperftools
   git clone https://github.com/gperftools/gperftools
