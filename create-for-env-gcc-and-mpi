@@ -51,7 +51,7 @@ fi
 if [ 1 -eq 1 ] ; then
   cd $base
   rm -rf mpitrace*
-  git clone https://github.com/AMD-HPC/mpitrace
+  git clone git@github.com:AMD-HPC/mpitrace.git
   
   cd ${base}/mpitrace/src
   ./configure  --with-hpm=core --with-papi=${base}/papi-install 
