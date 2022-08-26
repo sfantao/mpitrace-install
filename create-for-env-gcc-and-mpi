@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 base=$(pwd)
 
@@ -7,7 +7,7 @@ if [ 1 -eq 0 ] ; then
 cd $base
 rm -rf papi*
 #git clone orig-papi papi
-tar -xf ~/papi.tar.xz #git clone https://bitbucket.org/icl/papi
+git clone https://bitbucket.org/icl/papi
 cd papi
 git checkout -b papi-6-0-0-1-t papi-6-0-0-1-t
 cd src
@@ -48,7 +48,7 @@ fi
 
 
 # Get mpitrace - the latests is usually the better.
-if [ 1 -eq 0 ] ; then
+if [ 1 -eq 1 ] ; then
   cd $base
   rm -rf mpitrace*
   git clone -b add-roctx-merge https://github.com/sfantao/mpitrace
@@ -63,7 +63,7 @@ if [ 1 -eq 0 ] ; then
 fi
 
 # Get gperftools
-if [ 1 -eq 0 ] ; then
+if [ 1 -eq 1 ] ; then
   cd $base
   rm -rf gperftools
   git clone https://github.com/gperftools/gperftools
@@ -92,8 +92,8 @@ fi
 # Better profile post processor
 if [ 1 -eq 1 ] ; then 
   cd $base
-  #curl -LO https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
-  #tar -xf go1.18.4.linux-amd64.tar.gz
+  curl -LO https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+  tar -xf go1.18.4.linux-amd64.tar.gz
   cd ${base}/gperftools-install
   mv bin bin-original
   GOPATH=$(pwd) $base/go/bin/go install github.com/google/pprof@latest 
