@@ -3,7 +3,7 @@
 base=$(pwd)
 
 # Get papi in case we need to use hardware counters
-if [ 1 -eq 0 ] ; then
+if [ 1 -eq 1 ] ; then
 cd $base
 rm -rf papi*
 #git clone orig-papi papi
