@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 base=$(pwd)
 
@@ -54,7 +54,12 @@ if [ 1 -eq 1 ] ; then
   git clone git@github.com:AMD-HPC/mpitrace.git
   
   cd ${base}/mpitrace/src
-  ./configure  --with-hpm=core --with-papi=${base}/papi-install 
+
+  if which mpicc &> /dev/null ; then
+    CC=gcc ./configure  --with-hpm=core --with-papi=${base}/papi-install --with-mpicc=mpicc
+  else
+    CC=gcc ./configure  --with-hpm=core --with-papi=${base}/papi-install --with-mpicc=cc
+  fi
   make libmpitrace.so libmpitrace.a libmpihpm.so libmpihpm.a 
 
   cd ${base}/mpitrace/roctx
@@ -87,6 +92,16 @@ if [ 1 -eq 1 ] ; then
     CXX=g++
   make -j123
   cp *.so ${base}/gperftools-install/lib
+fi
+
+# Better profile post processor
+if [ 1 -eq 1 ] ; then 
+  cd $base
+  curl -LO https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+  tar -xf go1.18.4.linux-amd64.tar.gz
+  cd ${base}/gperftools-install
+  mv bin bin-original
+  GOPATH=$(pwd) $base/go/bin/go install github.com/google/pprof@latest 
 fi
 
 # MPI trace
