@@ -60,7 +60,8 @@ if [ 1 -eq 1 ] ; then
   else
     CC=gcc ./configure  --with-hpm=core --with-papi=${base}/papi-install --with-mpicc=cc
   fi
-  make libmpitrace.so libmpitrace.a libmpihpm.so libmpihpm.a 
+  make shared
+  make libmpihpm.so libmpihpm.a 
 
   cd ${base}/mpitrace/roctx
   ./configure  --with-rocm=$ROCM_PATH
